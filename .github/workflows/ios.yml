@@ -39,19 +39,13 @@ jobs:
           file llama.xcframework/ios-arm64_x86_64-simulator/llama.framework/llama
       - name: Debug bridging header
         run: |
+          set +e
           SDK=$(xcrun --sdk iphonesimulator --show-sdk-path)
           FRONTEND=$(xcrun --find swift-frontend)
           echo "SDK: $SDK"
           echo "Frontend: $FRONTEND"
-          echo "=== Testing bridging header compilation with clang ==="
-          clang -fsyntax-only -x objective-c \
-            -I llama-include \
-            -target arm64-apple-ios15.0-simulator \
-            -isysroot "$SDK" \
-            VanoIOS/llama_bridging.h 2>&1
-          echo "Clang exit code: $?"
           echo ""
-          echo "=== Test 1: swift-frontend typecheck WITH bridging header, NO PCH ==="
+          echo "=== Test 1: swift-frontend typecheck WITH llama_bridging.h ==="
           echo 'import Foundation; func test() { let m: UnsafeMutablePointer<llama_model>? = nil; _ = m }' > /tmp/test1.swift
           $FRONTEND \
             -frontend \
@@ -60,59 +54,82 @@ jobs:
             -sdk "$SDK" \
             -Xcc -I"$(pwd)/llama-include" \
             -swift-version 5 \
-            -module-name TestPCH \
+            -module-name Test1 \
             -import-objc-header "$(pwd)/VanoIOS/llama_bridging.h" \
             -typecheck \
             /tmp/test1.swift 2>&1
           echo "Test1 exit code: $?"
           echo ""
-          echo "=== Test 2: Create a simple bridging header with just llama_model ==="
-          echo '#include "llama.h"' > /tmp/simple_bridging.h
-          echo 'import Foundation; func test() { let m: UnsafeMutablePointer<llama_model>? = nil; _ = m }' > /tmp/test2.swift
+          echo "=== Test 2: Minimal struct ==="
+          echo 'struct Foo { int x; }; typedef struct Foo Foo;' > /tmp/simple.h
+          echo 'import Foundation; func test() { let m: UnsafeMutablePointer<Foo>? = nil; _ = m }' > /tmp/test2.swift
           $FRONTEND \
             -frontend \
             -target arm64-apple-ios15.0-simulator \
             -enable-objc-interop \
             -sdk "$SDK" \
-            -Xcc -I"$(pwd)/llama-include" \
             -swift-version 5 \
-            -module-name TestPCH2 \
-            -import-objc-header /tmp/simple_bridging.h \
+            -module-name Test2 \
+            -import-objc-header /tmp/simple.h \
             -typecheck \
             /tmp/test2.swift 2>&1
           echo "Test2 exit code: $?"
           echo ""
-          echo "=== Test 3: Minimal header with just struct forward decl ==="
-          echo 'struct llama_model;' > /tmp/minimal.h
-          echo '#include "llama.h"' >> /tmp/minimal.h
-          echo 'import Foundation; func test() { let m: UnsafeMutablePointer<llama_model>? = nil; _ = m }' > /tmp/test3.swift
+          echo "=== Test 3: Forward-declared struct only ==="
+          echo 'struct OpaqueType;' > /tmp/forward_only.h
+          echo 'import Foundation; func test() { let m: UnsafeMutablePointer<OpaqueType>? = nil; _ = m }' > /tmp/test3.swift
           $FRONTEND \
             -frontend \
             -target arm64-apple-ios15.0-simulator \
             -enable-objc-interop \
             -sdk "$SDK" \
-            -Xcc -I"$(pwd)/llama-include" \
             -swift-version 5 \
-            -module-name TestPCH3 \
-            -import-objc-header /tmp/minimal.h \
+            -module-name Test3 \
+            -import-objc-header /tmp/forward_only.h \
             -typecheck \
             /tmp/test3.swift 2>&1
           echo "Test3 exit code: $?"
           echo ""
-          echo "=== Test 4: Test a SIMPLE C struct (not llama) ==="
-          echo 'struct Foo { int x; }; typedef struct Foo Foo;' > /tmp/simple.h
-          echo 'import Foundation; func test() { let m: UnsafeMutablePointer<Foo>? = nil; _ = m }' > /tmp/test4.swift
+          echo "=== Test 4: Forward-declared struct with function using it ==="
+          cat > /tmp/forward_with_fn.h << 'EOF'
+struct MyModel;
+struct MyModel * create_model(void);
+void destroy_model(struct MyModel * m);
+EOF
+          echo 'import Foundation; func test() { let m: UnsafeMutablePointer<MyModel>? = nil; _ = m }' > /tmp/test4.swift
           $FRONTEND \
             -frontend \
             -target arm64-apple-ios15.0-simulator \
             -enable-objc-interop \
             -sdk "$SDK" \
             -swift-version 5 \
-            -module-name TestPCH4 \
-            -import-objc-header /tmp/simple.h \
+            -module-name Test4 \
+            -import-objc-header /tmp/forward_with_fn.h \
             -typecheck \
             /tmp/test4.swift 2>&1
           echo "Test4 exit code: $?"
+          echo ""
+          echo "=== Test 5: Only llama.h forward decl + function (no ggml) ==="
+          cat > /tmp/llama_minimal.h << 'EOF'
+#ifndef LLAMA_MIN_H
+#define LLAMA_MIN_H
+#include <stdint.h>
+struct llama_model;
+struct llama_model * llama_model_load(const char * path);
+#endif
+EOF
+          echo 'import Foundation; func test() { let m: UnsafeMutablePointer<llama_model>? = nil; _ = m }' > /tmp/test5.swift
+          $FRONTEND \
+            -frontend \
+            -target arm64-apple-ios15.0-simulator \
+            -enable-objc-interop \
+            -sdk "$SDK" \
+            -swift-version 5 \
+            -module-name Test5 \
+            -import-objc-header /tmp/llama_minimal.h \
+            -typecheck \
+            /tmp/test5.swift 2>&1
+          echo "Test5 exit code: $?"
       - name: Build iOS (Simulator, no signing)
         run: |
           set -o pipefail
