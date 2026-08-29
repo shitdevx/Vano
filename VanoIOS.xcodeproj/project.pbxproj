@@ -33,10 +33,9 @@
 		B39D87BD5D8C4994A55100CE /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		07203669D11545D69B7D8D9A /* VanoIOS.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = VanoIOS.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		CC00000200000001AABB0001 /* llama.xcframework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcframework; name = llama.xcframework; path = llama.xcframework; sourceTree = SOURCE_ROOT; };
-		DD00000100000001AABB0001 /* llama_bridging.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = llama_bridging.h; sourceTree = "<group>"; };
 		471FA06B2B4244E9802D14F3 = {isa = PBXGroup; children = (9A0099225DBD44B4B269D8F1, 2DC236574C8045829389C4BF); sourceTree = "<group>"; };
 		2DC236574C8045829389C4BF = {isa = PBXGroup; children = (07203669D11545D69B7D8D9A); name = Products; sourceTree = "<group>"; };
-		9A0099225DBD44B4B269D8F1 = {isa = PBXGroup; children = (5305331BE696473AB81DBD30, C6B8668C1E804D6183B80E86, 6A47491FF2524E53819F760D, 3482B750BF894AD083A396F6, 95A56D535B4B4A10ADB4017C, 8BCB3AEF7BD54BFFB6AE163F, B39D87BD5D8C4994A55100CE, DD00000100000001AABB0001); path = VanoIOS; sourceTree = "<group>"; };
+		9A0099225DBD44B4B269D8F1 = {isa = PBXGroup; children = (5305331BE696473AB81DBD30, C6B8668C1E804D6183B80E86, 6A47491FF2524E53819F760D, 3482B750BF894AD083A396F6, 95A56D535B4B4A10ADB4017C, 8BCB3AEF7BD54BFFB6AE163F, B39D87BD5D8C4994A55100CE); path = VanoIOS; sourceTree = "<group>"; };
 		6A47491FF2524E53819F760D = {isa = PBXGroup; children = (9651B6C403874407927BA258); path = Models; sourceTree = "<group>"; };
 		3482B750BF894AD083A396F6 = {isa = PBXGroup; children = (A0FBF837C63D4388A6CB615B, FA239ACFE88E45E0AF631A55, 4EDA6DC25087440BA251F1CA); path = Managers; sourceTree = "<group>"; };
 		95A56D535B4B4A10ADB4017C = {isa = PBXGroup; children = (07EEB7A8B943480380626747); path = ViewModels; sourceTree = "<group>"; };
@@ -102,7 +101,6 @@
                 INFOPLIST_FILE = VanoIOS/Info.plist;
                 INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
                 FRAMEWORK_SEARCH_PATHS = ("$(inherited)", "$(PROJECT_DIR)");
-                HEADER_SEARCH_PATHS = ("$(inherited)", "$(PROJECT_DIR)/Frameworks/llama.framework/Headers", "$(SRCROOT)/llama.xcframework/ios-arm64_x86_64-simulator/llama.framework/Headers");
                 IPHONEOS_DEPLOYMENT_TARGET = 15.0;
                 SDKROOT = iphoneos;
                 SUPPORTED_PLATFORMS = "iphoneos iphonesimulator";
@@ -110,7 +108,7 @@
                 MARKETING_VERSION = 1.12;
                 PRODUCT_BUNDLE_IDENTIFIER = com.vamora.vano.ios;
                 PRODUCT_NAME = "$(TARGET_NAME)";
-                SWIFT_OBJC_BRIDGING_HEADER = "VanoIOS/llama_bridging.h";
+                SWIFT_OBJC_BRIDGING_HEADER = "";
                 SWIFT_VERSION = 5.0;
                 TARGETED_DEVICE_FAMILY = "1,2";
             };
@@ -126,14 +124,13 @@
                 INFOPLIST_FILE = VanoIOS/Info.plist;
                 INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
                 FRAMEWORK_SEARCH_PATHS = ("$(inherited)", "$(PROJECT_DIR)");
-                HEADER_SEARCH_PATHS = ("$(inherited)", "$(PROJECT_DIR)/Frameworks/llama.framework/Headers", "$(SRCROOT)/llama.xcframework/ios-arm64_x86_64-simulator/llama.framework/Headers");
                 IPHONEOS_DEPLOYMENT_TARGET = 15.0;
 				SDKROOT = iphoneos;
 				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator";
                 MARKETING_VERSION = 1.12;
                 PRODUCT_BUNDLE_IDENTIFIER = com.vamora.vano.ios;
                 PRODUCT_NAME = "$(TARGET_NAME)";
-                SWIFT_OBJC_BRIDGING_HEADER = "VanoIOS/llama_bridging.h";
+                SWIFT_OBJC_BRIDGING_HEADER = "";
                 SWIFT_VERSION = 5.0;
                 TARGETED_DEVICE_FAMILY = "1,2";
             };

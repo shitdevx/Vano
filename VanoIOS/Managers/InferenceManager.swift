@@ -8,6 +8,8 @@ struct GenerationResult {
     let promptTimeMs: Int64
 }
 
+import llama
+
 class InferenceManager {
     private var model: UnsafeMutablePointer<llama_model>?
     private var ctx: UnsafeMutablePointer<llama_context>?
