@@ -38,8 +38,8 @@ class ModelManager: ObservableObject {
         let tmp = modelsDir.appendingPathComponent(id.fileName + ".tmp")
         try? FileManager.default.removeItem(at: tmp)
         let task = URLSession.shared.downloadTask(with: id.url) { [weak self] tempURL, response, error in
-            Task { @MainActor in
-                guard let self = self else { return }
+            Task { @MainActor [weak self] in
+                guard let self else { return }
                 if let error = error {
                     var s = self.downloadStates[id] ?? DownloadState()
                     s.isDownloading = false; s.error = error.localizedDescription
