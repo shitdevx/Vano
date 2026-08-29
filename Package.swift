@@ -7,20 +7,10 @@ let package = Package(
     products: [
         .executable(name: "VanoIOS", targets: ["VanoIOS"])
     ],
-    dependencies: [
-        // Prebuilt llama.cpp XCFramework b5046 — includes llama, ggml, Metal
-        // Use any recent build from https://github.com/ggml-org/llama.cpp/releases
-        .package(url: "https://github.com/ggml-org/llama.cpp", branch: "master")
-        // If Xcode SPM fails, use binaryTarget directly:
-        // .package(url: "https://github.com/ggml-org/llama.cpp", from: "b5046")
-    ],
     targets: [
         .executableTarget(
             name: "VanoIOS",
-            dependencies: [
-                // When using master branch SPM, the product is "LlamaFramework" via binaryTarget
-                // If building from source, depend on "llama"
-            ],
+            dependencies: ["LlamaFramework"],
             path: "VanoIOS",
             swiftSettings: [.unsafeFlags(["-O2"])]
         ),
