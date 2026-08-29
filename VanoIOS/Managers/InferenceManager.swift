@@ -8,7 +8,7 @@ struct GenerationResult {
     let promptTimeMs: Int64
 }
 
-#if canImport(llama)
+#if LLAMA_AVAILABLE
 import llama
 
 class InferenceManager {
@@ -166,9 +166,7 @@ class InferenceManager {
         return chat
     }
 }
-
 #else
-
 class InferenceManager {
     private var loadedPath: String?
     func ensureLoaded(fileURL: URL) async -> Bool {
@@ -182,19 +180,9 @@ class InferenceManager {
     func generate(history: [ChatMessage], prompt: String) async throws -> GenerationResult {
         let start = Date()
         try? await Task.sleep(nanoseconds: 600_000_000)
-        let text: String
-        let lower = prompt.lowercased()
-        if lower.contains("hi") && prompt.count < 20 {
-            text = "Hey! I'm glad you're here! How can I help?"
-        } else if lower.contains("analyze") && lower.contains("file") {
-            text = "I've analyzed your attached file (up to 8192 tokens). Here's a concise summary in **markdown**:\n\n- **Key points** extracted\n- `\(prompt.prefix(60))`\n\nLet me know if you want more detail!"
-        } else {
-            text = "Vano here — you asked: \"\(prompt.prefix(80))\"\n\nThis is a *simulated* on-device reply. Add `llama` XCFramework and rebuild on macOS to get real GGUF streaming with `temp 0.1 topP 0.9 topK 40 repeat 1.5 presence 0.5 frequency 0.5 context 8192 maxTokens 200`."
-        }
+        let text = "Vano stub — build with LLAMA_AVAILABLE flag for real inference."
         let elapsed = Int64(Date().timeIntervalSince(start) * 1000)
-        let tokens = max(12, text.split(separator: " ").count)
-        let tps: Float = elapsed > 0 ? Float(tokens) / (Float(elapsed)/1000) : 27.0
-        return GenerationResult(text: text, tokens: tokens, genTimeMs: elapsed, tokensPerSec: tps, promptTimeMs: 120)
+        return GenerationResult(text: text, tokens: 12, genTimeMs: elapsed, tokensPerSec: 27.0, promptTimeMs: 120)
     }
 }
 #endif
