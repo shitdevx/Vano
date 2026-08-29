@@ -29,17 +29,18 @@ jobs:
           unzip -o llama-xcframework.zip
           mv build-apple/llama.xcframework ./llama.xcframework
           rm -rf build-apple llama-xcframework.zip
-          # The simulator slice has incomplete headers — copy ALL headers from tvos slice
-          cp -R llama.xcframework/tvos-arm64/llama.framework/Headers/* llama.xcframework/ios-arm64_x86_64-simulator/llama.framework/Headers/
-          echo "=== xcframework platforms ==="
-          ls llama.xcframework/
-          echo "=== Sim slice headers (should have all) ==="
-          ls -la llama.xcframework/ios-arm64_x86_64-simulator/llama.framework/Headers/
-          echo "=== Sim module map ==="
-          cat llama.xcframework/ios-arm64_x86_64-simulator/llama.framework/Modules/module.modulemap
+          # Extract flat headers (no module.modulemap) for bridging header
+          mkdir -p llama-include
+          cp llama.xcframework/ios-arm64_x86_64-simulator/llama.framework/Headers/*.h llama-include/
+          rm -f llama-include/module.modulemap
+          echo "=== Flat headers ==="
+          ls llama-include/
+          echo "=== Binary ==="
+          file llama.xcframework/ios-arm64_x86_64-simulator/llama.framework/llama
       - name: Build iOS (Simulator, no signing)
         run: |
           set -o pipefail
+          XCFW_SIM="$(pwd)/llama.xcframework/ios-arm64_x86_64-simulator/llama.framework"
           xcodebuild build \
             -project VanoIOS.xcodeproj \
             -scheme VanoIOS \
@@ -48,6 +49,10 @@ jobs:
             CODE_SIGNING_ALLOWED=NO \
             CODE_SIGNING_REQUIRED=NO \
             CODE_SIGN_IDENTITY="" \
+            SWIFT_OBJC_BRIDGING_HEADER='VanoIOS/llama_bridging.h' \
+            HEADER_SEARCH_PATHS='$(inherited) $(PROJECT_DIR)/llama-include' \
+            LIBRARY_SEARCH_PATHS='$(inherited) '"$XCFW_SIM" \
+            OTHER_LDFLAGS='$(inherited) -llama' \
             LD_RUNPATH_SEARCH_PATHS='$(inherited) @executable_path/Frameworks' \
             SYMROOT=$(pwd)/build \
             2>&1 | tee xcodebuild.log | xcpretty || { echo "=== LAST 50 LINES OF LOG ==="; tail -50 xcodebuild.log; exit 1; }
