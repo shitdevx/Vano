@@ -27,15 +27,20 @@ jobs:
         run: |
           curl -L -o llama-xcframework.zip https://github.com/ggml-org/llama.cpp/releases/download/b5046/llama-b5046-xcframework.zip
           unzip -o llama-xcframework.zip
+          # Extract simulator framework from xcframework for Swift canImport
+          mkdir -p Frameworks
+          cp -R build-apple/llama.xcframework/ios-arm64_x86_64-simulator/llama.framework Frameworks/
+          # Also keep xcframework for embedding in .app
           mv build-apple/llama.xcframework ./llama.xcframework
           rm -rf build-apple llama-xcframework.zip
-          echo "=== Platforms ==="
+          echo "=== Frameworks dir ==="
+          ls -la Frameworks/llama.framework/
+          echo "=== xcframework platforms ==="
           ls llama.xcframework/
-          echo "=== Framework binary size ==="
-          ls -lh llama.xcframework/ios-arm64/llama.framework/llama
       - name: Build iOS (Simulator, no signing)
         run: |
           set -o pipefail
+          XCFW_PATH="$(pwd)/llama.xcframework/ios-arm64_x86_64-simulator"
           xcodebuild build \
             -project VanoIOS.xcodeproj \
             -scheme VanoIOS \
@@ -44,7 +49,8 @@ jobs:
             CODE_SIGNING_ALLOWED=NO \
             CODE_SIGNING_REQUIRED=NO \
             CODE_SIGN_IDENTITY="" \
-            FRAMEWORK_SEARCH_PATHS='$(inherited) $(PROJECT_DIR)' \
+            FRAMEWORK_SEARCH_PATHS='$(inherited) $(PROJECT_DIR)/Frameworks $(PROJECT_DIR) '"$XCFW_PATH" \
+            LD_RUNPATH_SEARCH_PATHS='$(inherited) @executable_path/Frameworks' \
             SYMROOT=$(pwd)/build \
             | tee xcodebuild.log | xcpretty || cat xcodebuild.log | tail -100
           echo "=== Build dir ==="
