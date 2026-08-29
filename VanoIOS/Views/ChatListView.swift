@@ -26,7 +26,7 @@ struct ChatListView: View {
                                 HStack(spacing: 12) {
                                     RoundedRectangle(cornerRadius: 10).fill(Color(red: 0x14/255.0, green: 0x53/255.0, blue: 0x2D/255.0)).frame(width: 42, height: 42).overlay(Image(systemName: "bubble.left.fill").foregroundColor(.white))
                                     VStack(alignment: .leading, spacing: 2) {
-                                        Text(chat.title).font(.subheadline).fontWeight(.bold).lineLimit(1)
+                                        Text(chat.title).font(.subheadline).bold().lineLimit(1)
                                         Text(chat.preview).font(.caption).foregroundColor(.gray).lineLimit(1)
                                         Text(chat.updatedAt, style: .date).font(.caption2).foregroundColor(.gray)
                                     }
@@ -44,7 +44,7 @@ struct ChatListView: View {
                     NavigationLink(destination: SettingsView()) { Image(systemName: "gearshape") }
                 }
                 ToolbarItem(placement: .navigationBarTrailing) {
-                    Button { let c = vm.createChat(); } label: { Image(systemName: "plus") }
+                    Button { _ = vm.createChat() } label: { Image(systemName: "plus") }
                 }
             }
             .background(Color(red: 0x0A/255.0, green: 0x0F/255.0, blue: 0x0A/255.0).ignoresSafeArea())

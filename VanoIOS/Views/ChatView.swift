@@ -20,7 +20,7 @@ struct ChatView: View {
         .navigationTitle(chat?.title ?? "Chat")
         .navigationBarTitleDisplayMode(.inline)
         .background(Color(red: 0x0A/255.0, green: 0x0F/255.0, blue: 0x0A/255.0).ignoresSafeArea())
-        .fileImporter(isPresented: $showImporter, allowedContentTypes: [.plainText, .json, .commaSeparatedText, .pdf, .markdown], allowsMultipleSelection: false) { result in
+        .fileImporter(isPresented: $showImporter, allowedContentTypes: [.plainText, .json, .commaSeparatedText, .pdf], allowsMultipleSelection: false) { result in
             guard let url = try? result.get().first else { return }
             let ext = url.pathExtension.lowercased()
             if ["png","jpg","jpeg","webp","heic","gif"].contains(ext) { return }
@@ -80,7 +80,7 @@ struct ChatView: View {
     private var inputBar: some View {
         HStack(alignment: .bottom, spacing: 8) {
             Button { showImporter = true } label: { Image(systemName: "paperclip").foregroundColor(Color(red: 0x22/255.0, green: 0xC5/255.0, blue: 0x5E/255.0)) }.disabled(vm.isGenerating)
-            TextField(attachedName != nil ? "Ask about file..." : "Message...", text: $input, axis: .vertical).lineLimit(4).padding(10).background(Color(red: 0x1E/255.0, green: 0x24/255.0, blue: 0x20/255.0)).clipShape(RoundedRectangle(cornerRadius: 22)).foregroundColor(.white)
+            TextField(attachedName != nil ? "Ask about file..." : "Message...", text: $input).padding(10).background(Color(red: 0x1E/255.0, green: 0x24/255.0, blue: 0x20/255.0)).clipShape(RoundedRectangle(cornerRadius: 22)).foregroundColor(.white)
             Button {
                 let txt = input.trimmingCharacters(in: .whitespacesAndNewlines)
                 if !txt.isEmpty || attachedName != nil { vm.sendMessage(chatId: chatId, text: txt, fileName: attachedName, fileText: attachedText); input=""; attachedName=nil; attachedText=nil }
@@ -107,7 +107,7 @@ struct MessageRow: View {
                     if let att = msg.attachmentName {
                         HStack(spacing: 4) {
                             Image(systemName: "doc.text").font(.caption2)
-                            Text(att).font(.caption2).fontWeight(.bold).lineLimit(1)
+                            Text(att).font(.caption2).bold().lineLimit(1)
                         }
                         .padding(.horizontal, 8).padding(.vertical, 4)
                         .background(isUser ? Color.white.opacity(0.15) : Color.gray.opacity(0.2))
@@ -144,7 +144,7 @@ struct MessageRow: View {
                             Image(systemName: "cpu").font(.caption2)
                             Text(model.components(separatedBy: " ").first ?? model).font(.caption2)
                             if model.contains(" ") {
-                                Text(model.components(separatedBy: " ").dropFirst().joined(separator: " ")).font(.caption2).fontWeight(.bold).padding(.horizontal, 4).background(Color.green.opacity(0.2)).clipShape(RoundedRectangle(cornerRadius: 4))
+                                Text(model.components(separatedBy: " ").dropFirst().joined(separator: " ")).font(.caption2).bold().padding(.horizontal, 4).background(Color.green.opacity(0.2)).clipShape(RoundedRectangle(cornerRadius: 4))
                             }
                         }
                         .padding(.horizontal, 6).padding(.vertical, 3).background(Color(red: 0x1E/255.0, green: 0x24/255.0, blue: 0x20/255.0)).clipShape(RoundedRectangle(cornerRadius: 6))
