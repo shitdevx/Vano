@@ -5,6 +5,7 @@ on:
     branches: [ main, master ]
     paths:
       - 'VanoIOS/**'
+      - 'VanoIOS.xcodeproj/**'
       - 'Package.swift'
       - '.github/workflows/ios.yml'
   pull_request:
