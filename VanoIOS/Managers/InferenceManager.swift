@@ -8,9 +8,6 @@ struct GenerationResult {
     let promptTimeMs: Int64
 }
 
-#if LLAMA_AVAILABLE
-import llama
-
 class InferenceManager {
     private var model: UnsafeMutablePointer<llama_model>?
     private var ctx: UnsafeMutablePointer<llama_context>?
@@ -166,23 +163,3 @@ class InferenceManager {
         return chat
     }
 }
-#else
-class InferenceManager {
-    private var loadedPath: String?
-    func ensureLoaded(fileURL: URL) async -> Bool {
-        guard FileManager.default.fileExists(atPath: fileURL.path) else { return false }
-        if loadedPath == fileURL.path { return true }
-        try? await Task.sleep(nanoseconds: 300_000_000)
-        loadedPath = fileURL.path
-        return true
-    }
-    func unload() { loadedPath = nil }
-    func generate(history: [ChatMessage], prompt: String) async throws -> GenerationResult {
-        let start = Date()
-        try? await Task.sleep(nanoseconds: 600_000_000)
-        let text = "Vano stub — build with LLAMA_AVAILABLE flag for real inference."
-        let elapsed = Int64(Date().timeIntervalSince(start) * 1000)
-        return GenerationResult(text: text, tokens: 12, genTimeMs: elapsed, tokensPerSec: 27.0, promptTimeMs: 120)
-    }
-}
-#endif

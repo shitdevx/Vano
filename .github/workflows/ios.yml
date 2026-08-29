@@ -41,6 +41,7 @@ jobs:
         run: |
           set -o pipefail
           XCFW_PATH="$(pwd)/llama.xcframework/ios-arm64_x86_64-simulator"
+          HEADERS_PATH="$XCFW_PATH/llama.framework/Headers"
           xcodebuild build \
             -project VanoIOS.xcodeproj \
             -scheme VanoIOS \
@@ -50,8 +51,7 @@ jobs:
             CODE_SIGNING_REQUIRED=NO \
             CODE_SIGN_IDENTITY="" \
             FRAMEWORK_SEARCH_PATHS='$(inherited) $(PROJECT_DIR)/Frameworks $(PROJECT_DIR) '"$XCFW_PATH" \
-            OTHER_SWIFT_FLAGS='-DLLAMA_AVAILABLE' \
-            OTHER_CFLAGS='-DLLAMA_AVAILABLE' \
+            HEADER_SEARCH_PATHS='$(inherited) '"$HEADERS_PATH" \
             LD_RUNPATH_SEARCH_PATHS='$(inherited) @executable_path/Frameworks' \
             SYMROOT=$(pwd)/build \
             | tee xcodebuild.log | xcpretty || cat xcodebuild.log | tail -100
