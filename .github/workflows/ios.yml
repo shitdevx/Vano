@@ -37,6 +37,22 @@ jobs:
           ls llama-include/
           echo "=== Binary ==="
           file llama.xcframework/ios-arm64_x86_64-simulator/llama.framework/llama
+      - name: Debug bridging header
+        run: |
+          SDK=$(xcrun --sdk iphonesimulator --show-sdk-path)
+          echo "SDK: $SDK"
+          echo "=== Testing bridging header compilation ==="
+          clang -fsyntax-only -x objective-c \
+            -I llama-include \
+            -target arm64-apple-ios15.0-simulator \
+            -isysroot "$SDK" \
+            VanoIOS/llama_bridging.h 2>&1 || true
+          echo "=== Testing with C++ mode ==="
+          clang -fsyntax-only -x c++ \
+            -I llama-include \
+            -target arm64-apple-ios15.0-simulator \
+            -isysroot "$SDK" \
+            VanoIOS/llama_bridging.h 2>&1 || true
       - name: Build iOS (Simulator, no signing)
         run: |
           set -o pipefail
