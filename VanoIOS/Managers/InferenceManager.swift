@@ -8,8 +8,8 @@ struct GenerationResult {
     let promptTimeMs: Int64
 }
 
-#if canImport(LlamaFramework)
-import LlamaFramework
+#if canImport(llama)
+import llama
 
 // Real llama.cpp via XCFramework b5046 (https://github.com/ggml-org/llama.cpp/releases/download/b5046/llama-b5046-xcframework.zip)
 // Add via Xcode: File → Add Packages → https://github.com/ggml-org/llama.cpp  OR via Package.swift binaryTarget
