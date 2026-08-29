@@ -57,6 +57,8 @@ jobs:
         run: |
           set -o pipefail
           XCFW_SIM="$(pwd)/llama.xcframework/ios-arm64_x86_64-simulator/llama.framework"
+          # Clean DerivedData to avoid stale PCH/module cache issues
+          rm -rf ~/Library/Developer/Xcode/DerivedData/VanoIOS-*
           xcodebuild build \
             -project VanoIOS.xcodeproj \
             -scheme VanoIOS \
@@ -70,6 +72,7 @@ jobs:
             LIBRARY_SEARCH_PATHS='$(inherited) '"$XCFW_SIM" \
             OTHER_LDFLAGS='$(inherited) -llama' \
             LD_RUNPATH_SEARCH_PATHS='$(inherited) @executable_path/Frameworks' \
+            SWIFT_ENABLE_EXPERIMENTAL_EMIT_MODULE_SEPARATELY=NO \
             SYMROOT=$(pwd)/build \
             2>&1 | tee xcodebuild.log | xcpretty || { echo "=== LAST 50 LINES OF LOG ==="; tail -50 xcodebuild.log; exit 1; }
           echo "=== Build dir ==="
