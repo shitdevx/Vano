@@ -6,9 +6,9 @@ struct SettingsView: View {
     var body: some View {
         ScrollView {
             VStack(spacing: 16) {
-                Text("Settings").font(.title2).bold().foregroundColor(.white).frame(maxWidth: .infinity, alignment: .leading)
+                Text("Settings").font(.title2).fontWeight(.bold).foregroundColor(.white).frame(maxWidth: .infinity, alignment: .leading)
                 VStack(alignment: .leading, spacing: 12) {
-                    Label("Model selection", systemImage: "cpu").bold().foregroundColor(.white)
+                    Label("Model selection", systemImage: "cpu").fontWeight(.bold).foregroundColor(.white)
                     Text("Choose which downloaded model is used for chat. Green = selected.").font(.caption).foregroundColor(.gray)
                     ForEach(ModelId.allCases) { model in
                         let downloaded = vm.modelManager.isDownloaded(model)
@@ -37,7 +37,7 @@ struct SettingsView: View {
                 }.padding(16).background(Color(red: 0x1E/255.0, green: 0x24/255.0, blue: 0x20/255.0)).clipShape(RoundedRectangle(cornerRadius: 16))
 
                 VStack(alignment: .leading, spacing: 12) {
-                    Text("Danger zone").bold().foregroundColor(.white)
+                    Text("Danger zone").fontWeight(.bold).foregroundColor(.white)
                     Text("Remove all downloaded models and conversations. This cannot be undone.").font(.caption).foregroundColor(.white.opacity(0.8))
                     Button(role: .destructive) { showConfirm = true } label: {
                         Label("Remove all models and data", systemImage: "trash.fill").frame(maxWidth: .infinity)
@@ -45,12 +45,12 @@ struct SettingsView: View {
                 }.padding(16).background(Color.red.opacity(0.2)).clipShape(RoundedRectangle(cornerRadius: 16))
 
                 VStack(spacing: 8) {
-                    Text("Vano").bold().foregroundColor(.white)
+                    Text("Vano").fontWeight(.bold).foregroundColor(.white)
                     Text("Private, offline AI chat").font(.caption).foregroundColor(.gray)
                     Divider().background(Color.gray.opacity(0.15))
-                    HStack { Text("Version").font(.caption).foregroundColor(.gray); Spacer(); Text("1.11 (12)").font(.caption).bold() }
-                    HStack { Text("Package").font(.caption).foregroundColor(.gray); Spacer(); Text("com.vamora.vano").font(.caption).bold() }
-                    HStack { Text("Models").font(.caption).foregroundColor(.gray); Spacer(); Text("github.com/TheVamoraProject/Vano").font(.caption).bold() }
+                    HStack { Text("Version").font(.caption).foregroundColor(.gray); Spacer(); Text("1.11 (12)").font(.caption).fontWeight(.bold) }
+                    HStack { Text("Package").font(.caption).foregroundColor(.gray); Spacer(); Text("com.vamora.vano").font(.caption).fontWeight(.bold) }
+                    HStack { Text("Models").font(.caption).foregroundColor(.gray); Spacer(); Text("github.com/TheVamoraProject/Vano").font(.caption).fontWeight(.bold) }
                     Text("© 2026 Vamora Project • Built with green accent").font(.caption2).foregroundColor(.gray)
                 }.padding(16).background(Color(red: 0x1E/255.0, green: 0x24/255.0, blue: 0x20/255.0)).clipShape(RoundedRectangle(cornerRadius: 16))
             }.padding(16)

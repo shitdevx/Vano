@@ -9,7 +9,7 @@ struct DownloadView: View {
                 RoundedRectangle(cornerRadius: 20).fill(Color(red: 0x12/255.0, green: 0x14/255.0, blue: 0x12/255.0))
                     .frame(width: 84, height: 84)
                     .overlay(Image("VanoLogo").resizable().scaledToFit().frame(width: 56, height: 56).clipShape(RoundedRectangle(cornerRadius: 12)))
-                Text("Welcome to Vano").font(.title2).bold().foregroundColor(.white)
+                Text("Welcome to Vano").font(.title2).fontWeight(.bold).foregroundColor(.white)
                 Text("Choose a model to download. You can change it later in Settings.").font(.subheadline).foregroundColor(.gray).multilineTextAlignment(.center).padding(.horizontal, 12)
                 ForEach(ModelId.allCases) { model in
                     let state = vm.modelManager.downloadStates[model]
@@ -21,7 +21,7 @@ struct DownloadView: View {
                         HStack {
                             VStack(alignment: .leading, spacing: 2) {
                                 HStack {
-                                    Text(model.displayName).bold().foregroundColor(.white)
+                                    Text(model.displayName).fontWeight(.bold).foregroundColor(.white)
                                     if downloaded { Image(systemName: "checkmark.circle.fill").foregroundColor(Color(red: 0x22/255.0, green: 0xC5/255.0, blue: 0x5E/255.0)) }
                                 }
                                 Text(model.sizeLabel).font(.caption).foregroundColor(.gray)

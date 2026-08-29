@@ -26,7 +26,7 @@ struct ChatListView: View {
                                 HStack(spacing: 12) {
                                     RoundedRectangle(cornerRadius: 10).fill(Color(red: 0x14/255.0, green: 0x53/255.0, blue: 0x2D/255.0)).frame(width: 42, height: 42).overlay(Image(systemName: "bubble.left.fill").foregroundColor(.white))
                                     VStack(alignment: .leading, spacing: 2) {
-                                        Text(chat.title).font(.subheadline).bold().lineLimit(1)
+                                        Text(chat.title).font(.subheadline).fontWeight(.bold).lineLimit(1)
                                         Text(chat.preview).font(.caption).foregroundColor(.gray).lineLimit(1)
                                         Text(chat.updatedAt, style: .date).font(.caption2).foregroundColor(.gray)
                                     }
