@@ -35,11 +35,22 @@ jobs:
           # Also keep xcframework for embedding in .app
           mv build-apple/llama.xcframework ./llama.xcframework
           rm -rf build-apple llama-xcframework.zip
-          echo "=== Frameworks dir ==="
-          ls -la Frameworks/llama.framework/
+          echo "=== Headers ==="
           ls -la Frameworks/llama.framework/Headers/ | head -15
-          echo "=== xcframework platforms ==="
-          ls llama.xcframework/
+          echo "=== First 30 lines of llama.h ==="
+          head -30 Frameworks/llama.framework/Headers/llama.h
+          echo "=== Try compiling bridging header ==="
+          xcrun -sdk iphonesimulator clang -fsyntax-only -x objective-c \
+            -I Frameworks/llama.framework/Headers \
+            -target arm64-apple-ios15.0-simulator \
+            -isysroot $(xcrun --sdk iphonesimulator --show-sdk-path) \
+            VanoIOS/llama_bridging.h 2>&1 | head -30
+          echo "=== Also try without framework ==="
+          xcrun -sdk iphonesimulator clang -fsyntax-only -x objective-c \
+            -I Frameworks/llama.framework/Headers \
+            -target arm64-apple-ios15.0-simulator \
+            -isysroot $(xcrun --sdk iphonesimulator --show-sdk-path) \
+            -E -dM VanoIOS/llama_bridging.h 2>&1 | grep -i "llama_model\|llama_context" | head -10
       - name: Build iOS (Simulator, no signing)
         run: |
           set -o pipefail
