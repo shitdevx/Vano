@@ -97,6 +97,8 @@
                 INFOPLIST_FILE = VanoIOS/Info.plist;
                 INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
                 IPHONEOS_DEPLOYMENT_TARGET = 15.0;
+				SDKROOT = iphoneos;
+				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator";
                 LD_RUNPATH_SEARCH_PATHS = ("$(inherited)", "@executable_path/Frameworks");
                 MARKETING_VERSION = 1.12;
                 PRODUCT_BUNDLE_IDENTIFIER = com.vamora.vano.ios;
@@ -116,6 +118,8 @@
                 INFOPLIST_FILE = VanoIOS/Info.plist;
                 INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
                 IPHONEOS_DEPLOYMENT_TARGET = 15.0;
+				SDKROOT = iphoneos;
+				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator";
                 MARKETING_VERSION = 1.12;
                 PRODUCT_BUNDLE_IDENTIFIER = com.vamora.vano.ios;
                 PRODUCT_NAME = "$(TARGET_NAME)";
