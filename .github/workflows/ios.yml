@@ -32,13 +32,11 @@ jobs:
       - name: Build iOS (Simulator, no signing)
         run: |
           set -o pipefail
-          # Build to known SYMROOT so artifact is findable
           xcodebuild build \
             -project VanoIOS.xcodeproj \
             -scheme VanoIOS \
             -configuration Debug \
-            -destination 'generic/platform=iOS Simulator' \
-            -sdk iphonesimulator \
+            -destination 'platform=iOS Simulator,name=iPhone 15,OS=latest' \
             CODE_SIGNING_ALLOWED=NO \
             CODE_SIGNING_REQUIRED=NO \
             CODE_SIGN_IDENTITY="" \
