@@ -38,8 +38,8 @@ jobs:
           echo "=== Binary ==="
           file llama.xcframework/ios-arm64_x86_64-simulator/llama.framework/llama
       - name: Debug bridging header
+        shell: bash {0}
         run: |
-          set +e
           SDK=$(xcrun --sdk iphonesimulator --show-sdk-path)
           FRONTEND=$(xcrun --find swift-frontend)
           echo "SDK: $SDK"
@@ -57,7 +57,7 @@ jobs:
             -module-name Test1 \
             -import-objc-header "$(pwd)/VanoIOS/llama_bridging.h" \
             -typecheck \
-            /tmp/test1.swift 2>&1
+            /tmp/test1.swift 2>&1 || true
           echo "Test1 exit code: $?"
           echo ""
           echo "=== Test 2: Minimal struct ==="
@@ -72,7 +72,7 @@ jobs:
             -module-name Test2 \
             -import-objc-header /tmp/simple.h \
             -typecheck \
-            /tmp/test2.swift 2>&1
+            /tmp/test2.swift 2>&1 || true
           echo "Test2 exit code: $?"
           echo ""
           echo "=== Test 3: Forward-declared struct only ==="
@@ -87,15 +87,15 @@ jobs:
             -module-name Test3 \
             -import-objc-header /tmp/forward_only.h \
             -typecheck \
-            /tmp/test3.swift 2>&1
+            /tmp/test3.swift 2>&1 || true
           echo "Test3 exit code: $?"
           echo ""
           echo "=== Test 4: Forward-declared struct with function using it ==="
           cat > /tmp/forward_with_fn.h << 'EOF'
-struct MyModel;
-struct MyModel * create_model(void);
-void destroy_model(struct MyModel * m);
-EOF
+          struct MyModel;
+          struct MyModel * create_model(void);
+          void destroy_model(struct MyModel * m);
+          EOF
           echo 'import Foundation; func test() { let m: UnsafeMutablePointer<MyModel>? = nil; _ = m }' > /tmp/test4.swift
           $FRONTEND \
             -frontend \
@@ -106,18 +106,18 @@ EOF
             -module-name Test4 \
             -import-objc-header /tmp/forward_with_fn.h \
             -typecheck \
-            /tmp/test4.swift 2>&1
+            /tmp/test4.swift 2>&1 || true
           echo "Test4 exit code: $?"
           echo ""
           echo "=== Test 5: Only llama.h forward decl + function (no ggml) ==="
           cat > /tmp/llama_minimal.h << 'EOF'
-#ifndef LLAMA_MIN_H
-#define LLAMA_MIN_H
-#include <stdint.h>
-struct llama_model;
-struct llama_model * llama_model_load(const char * path);
-#endif
-EOF
+          #ifndef LLAMA_MIN_H
+          #define LLAMA_MIN_H
+          #include <stdint.h>
+          struct llama_model;
+          struct llama_model * llama_model_load(const char * path);
+          #endif
+          EOF
           echo 'import Foundation; func test() { let m: UnsafeMutablePointer<llama_model>? = nil; _ = m }' > /tmp/test5.swift
           $FRONTEND \
             -frontend \
@@ -128,7 +128,7 @@ EOF
             -module-name Test5 \
             -import-objc-header /tmp/llama_minimal.h \
             -typecheck \
-            /tmp/test5.swift 2>&1
+            /tmp/test5.swift 2>&1 || true
           echo "Test5 exit code: $?"
       - name: Build iOS (Simulator, no signing)
         run: |
