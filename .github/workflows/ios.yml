@@ -30,11 +30,14 @@ jobs:
           # Extract simulator framework from xcframework for Swift canImport
           mkdir -p Frameworks
           cp -R build-apple/llama.xcframework/ios-arm64_x86_64-simulator/llama.framework Frameworks/
+          # Remove module map to avoid Clang module conflicts with bridging header
+          rm -rf Frameworks/llama.framework/Modules
           # Also keep xcframework for embedding in .app
           mv build-apple/llama.xcframework ./llama.xcframework
           rm -rf build-apple llama-xcframework.zip
           echo "=== Frameworks dir ==="
           ls -la Frameworks/llama.framework/
+          ls -la Frameworks/llama.framework/Headers/ | head -15
           echo "=== xcframework platforms ==="
           ls llama.xcframework/
       - name: Build iOS (Simulator, no signing)
