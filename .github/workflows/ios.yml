@@ -41,24 +41,70 @@ jobs:
         run: |
           SDK=$(xcrun --sdk iphonesimulator --show-sdk-path)
           echo "SDK: $SDK"
-          echo "=== Testing bridging header compilation ==="
+          echo "=== Testing bridging header compilation with clang ==="
           clang -fsyntax-only -x objective-c \
             -I llama-include \
             -target arm64-apple-ios15.0-simulator \
             -isysroot "$SDK" \
-            VanoIOS/llama_bridging.h 2>&1 || true
-          echo "=== Testing with C++ mode ==="
-          clang -fsyntax-only -x c++ \
-            -I llama-include \
+            VanoIOS/llama_bridging.h 2>&1
+          CLANG_EXIT=$?
+          echo "Clang exit code: $CLANG_EXIT"
+          echo "=== Testing with swift-frontend -emit-pch ==="
+          rm -rf /tmp/pch-test
+          mkdir -p /tmp/pch-test
+          swift-frontend \
+            -frontend \
             -target arm64-apple-ios15.0-simulator \
-            -isysroot "$SDK" \
-            VanoIOS/llama_bridging.h 2>&1 || true
+            -enable-objc-interop \
+            -sdk "$SDK" \
+            -Xcc -I"$(pwd)/llama-include" \
+            -swift-version 5 \
+            -module-name TestPCH \
+            -import-objc-header "$(pwd)/VanoIOS/llama_bridging.h" \
+            -emit-pch \
+            -pch-output-dir /tmp/pch-test \
+            "$(pwd)/VanoIOS/llama_bridging.h" 2>&1
+          PCH_EXIT=$?
+          echo "PCH exit code: $PCH_EXIT"
+          echo "=== PCH files ==="
+          find /tmp/pch-test -type f 2>&1
+          echo "=== Test if we can compile a Swift file with the PCH ==="
+          echo 'import Foundation; func test() { let x: UnsafeMutablePointer<Int32>? = nil; _ = x }' > /tmp/test.swift
+          swift-frontend \
+            -frontend \
+            -target arm64-apple-ios15.0-simulator \
+            -enable-objc-interop \
+            -sdk "$SDK" \
+            -Xcc -I"$(pwd)/llama-include" \
+            -swift-version 5 \
+            -module-name TestPCH \
+            -import-objc-header "$(pwd)/VanoIOS/llama_bridging.h" \
+            -pch-output-dir /tmp/pch-test \
+            -pch-disable-validation \
+            -typecheck \
+            /tmp/test.swift 2>&1
+          echo "=== Test with actual llama type ==="
+          echo 'import Foundation; func test() { let m: UnsafeMutablePointer<llama_model>? = nil; _ = m }' > /tmp/test2.swift
+          swift-frontend \
+            -frontend \
+            -target arm64-apple-ios15.0-simulator \
+            -enable-objc-interop \
+            -sdk "$SDK" \
+            -Xcc -I"$(pwd)/llama-include" \
+            -swift-version 5 \
+            -module-name TestPCH \
+            -import-objc-header "$(pwd)/VanoIOS/llama_bridging.h" \
+            -pch-output-dir /tmp/pch-test \
+            -pch-disable-validation \
+            -typecheck \
+            /tmp/test2.swift 2>&1
       - name: Build iOS (Simulator, no signing)
         run: |
           set -o pipefail
           XCFW_SIM="$(pwd)/llama.xcframework/ios-arm64_x86_64-simulator/llama.framework"
-          # Clean DerivedData to avoid stale PCH/module cache issues
+          # Clean all caches
           rm -rf ~/Library/Developer/Xcode/DerivedData/VanoIOS-*
+          rm -rf ~/Library/Developer/Xcode/DerivedData/ModuleCache.noindex
           xcodebuild build \
             -project VanoIOS.xcodeproj \
             -scheme VanoIOS \
@@ -73,6 +119,7 @@ jobs:
             OTHER_LDFLAGS='$(inherited) -llama' \
             LD_RUNPATH_SEARCH_PATHS='$(inherited) @executable_path/Frameworks' \
             SWIFT_ENABLE_EXPERIMENTAL_EMIT_MODULE_SEPARATELY=NO \
+            SWIFT_COMPILATION_MODE=wholemodule \
             SYMROOT=$(pwd)/build \
             2>&1 | tee xcodebuild.log | xcpretty || { echo "=== LAST 50 LINES OF LOG ==="; tail -50 xcodebuild.log; exit 1; }
           echo "=== Build dir ==="
