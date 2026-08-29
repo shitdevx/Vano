@@ -40,19 +40,20 @@ jobs:
       - name: Debug bridging header
         run: |
           SDK=$(xcrun --sdk iphonesimulator --show-sdk-path)
+          FRONTEND=$(xcrun --find swift-frontend)
           echo "SDK: $SDK"
+          echo "Frontend: $FRONTEND"
           echo "=== Testing bridging header compilation with clang ==="
           clang -fsyntax-only -x objective-c \
             -I llama-include \
             -target arm64-apple-ios15.0-simulator \
             -isysroot "$SDK" \
             VanoIOS/llama_bridging.h 2>&1
-          CLANG_EXIT=$?
-          echo "Clang exit code: $CLANG_EXIT"
+          echo "Clang exit code: $?"
           echo "=== Testing with swift-frontend -emit-pch ==="
           rm -rf /tmp/pch-test
           mkdir -p /tmp/pch-test
-          swift-frontend \
+          $FRONTEND \
             -frontend \
             -target arm64-apple-ios15.0-simulator \
             -enable-objc-interop \
@@ -64,28 +65,12 @@ jobs:
             -emit-pch \
             -pch-output-dir /tmp/pch-test \
             "$(pwd)/VanoIOS/llama_bridging.h" 2>&1
-          PCH_EXIT=$?
-          echo "PCH exit code: $PCH_EXIT"
+          echo "PCH exit code: $?"
           echo "=== PCH files ==="
           find /tmp/pch-test -type f 2>&1
-          echo "=== Test if we can compile a Swift file with the PCH ==="
-          echo 'import Foundation; func test() { let x: UnsafeMutablePointer<Int32>? = nil; _ = x }' > /tmp/test.swift
-          swift-frontend \
-            -frontend \
-            -target arm64-apple-ios15.0-simulator \
-            -enable-objc-interop \
-            -sdk "$SDK" \
-            -Xcc -I"$(pwd)/llama-include" \
-            -swift-version 5 \
-            -module-name TestPCH \
-            -import-objc-header "$(pwd)/VanoIOS/llama_bridging.h" \
-            -pch-output-dir /tmp/pch-test \
-            -pch-disable-validation \
-            -typecheck \
-            /tmp/test.swift 2>&1
           echo "=== Test with actual llama type ==="
           echo 'import Foundation; func test() { let m: UnsafeMutablePointer<llama_model>? = nil; _ = m }' > /tmp/test2.swift
-          swift-frontend \
+          $FRONTEND \
             -frontend \
             -target arm64-apple-ios15.0-simulator \
             -enable-objc-interop \
@@ -98,6 +83,7 @@ jobs:
             -pch-disable-validation \
             -typecheck \
             /tmp/test2.swift 2>&1
+          echo "Typecheck exit code: $?"
       - name: Build iOS (Simulator, no signing)
         run: |
           set -o pipefail
