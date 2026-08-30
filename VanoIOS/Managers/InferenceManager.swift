@@ -72,7 +72,7 @@ class InferenceManager {
                 let nCtx = Int(llama_n_ctx(context))
                 var tokens = [llama_token](repeating: 0, count: fullPrompt.utf8.count + 1024)
                 let nTokens = fullPrompt.withCString { ptr in
-                    llama_tokenize(mdl, ptr, Int32(strlen(ptr)), &tokens, Int32(tokens.count), true, true)
+                    llama_tokenize(vocab, ptr, Int32(strlen(ptr)), &tokens, Int32(tokens.count), true, true)
                 }
                 guard nTokens > 0 else {
                     cont.resume(throwing: NSError(domain: "Llama", code: 2, userInfo: [NSLocalizedDescriptionKey: "Tokenize failed"]))
@@ -110,7 +110,7 @@ class InferenceManager {
                     if llama_vocab_is_eog(vocab, tok) { break }
                     let bufLen = 64
                     var buf = [CChar](repeating: 0, count: bufLen)
-                    let len = llama_token_to_piece(mdl, tok, &buf, Int32(bufLen), 0, true)
+                    let len = llama_token_to_piece(vocab, tok, &buf, Int32(bufLen), 0, true)
                     if len > 0 { output += String(cString: buf) }
                     generated += 1
                     var nextBatch = llama_batch_init(1, 0, 1)
