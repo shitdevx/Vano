@@ -43,7 +43,7 @@
 		8BCB3AEF7BD54BFFB6AE163F = {isa = PBXGroup; children = (29EB6452BD274C6D806B0133, 404560177AE14AC4825E73B6, 2F8F86204A5A4511851446D1, 378E8E1129EC45418CCC3993); path = Views; sourceTree = "<group>"; };
 		214E17C3EE9947CF827CBB28 /* Sources */ = {isa = PBXSourcesBuildPhase; buildActionMask = 2147483647; files = (A9BF17E0B8F74AE3B9BE09B1 /* VanoIOSApp.swift in Sources */, B1D131860C1549BAA9D4E3A8 /* ContentView.swift in Sources */, 102A8D770D204D7B854D3F63 /* Models.swift in Sources */, 9E1FF45EB8C24ECEB0C1D7B4 /* ModelManager.swift in Sources */, 70E400E0AE1943BDA0D2AA0C /* ChatStore.swift in Sources */, 8C700A4D2CBF4688B2A419D5 /* InferenceManager.swift in Sources */, F8099C85220B4F529BAD9DB8 /* VanoViewModel.swift in Sources */, 2B435BA5600B4F698ADFAC8C /* DownloadView.swift in Sources */, 9D9522B79CD641C8AB23AEB5 /* ChatListView.swift in Sources */, 1373181318E3416DA70AF84F /* ChatView.swift in Sources */, 0FA42BBF5F524C77A3D41963 /* SettingsView.swift in Sources */); runOnlyForDeploymentPostprocessing = 0; };
 		F49AD5E694A046A28CCE43B7 /* Resources */ = {isa = PBXResourcesBuildPhase; buildActionMask = 2147483647; files = (5B4EA83822964A2EB06FD83A /* Assets.xcassets in Resources */); runOnlyForDeploymentPostprocessing = 0; };
-		4897AF5DF0654AD7B4FE5572 /* Frameworks */ = {isa = PBXFrameworksBuildPhase; buildActionMask = 2147483647; files = (); runOnlyForDeploymentPostprocessing = 0; };
+		4897AF5DF0654AD7B4FE5572 /* Frameworks */ = {isa = PBXFrameworksBuildPhase; buildActionMask = 2147483647; files = (CC00000100000001AABB0001 /* llama.xcframework in Frameworks */); runOnlyForDeploymentPostprocessing = 0; };
 		CC00000400000001AABB0001 /* Embed Frameworks */ = {isa = PBXCopyFilesBuildPhase; buildActionMask = 2147483647; dstPath = ""; dstSubfolderSpec = 10; files = (CC00000300000001AABB0001 /* LlamaFramework.xcframework in Embed Frameworks */); name = "Embed Frameworks"; runOnlyForDeploymentPostprocessing = 0; };
         D11EBE403D2A48409D4493FC /* VanoIOS */ = {
             isa = PBXNativeTarget;
@@ -52,6 +52,7 @@
                 214E17C3EE9947CF827CBB28 /* Sources */,
                 4897AF5DF0654AD7B4FE5572 /* Frameworks */,
                 F49AD5E694A046A28CCE43B7 /* Resources */,
+                CC00000400000001AABB0001 /* Embed Frameworks */,
             );
             buildRules = (
             );
